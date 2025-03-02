@@ -1,12 +1,19 @@
 package com.app.encryption;
 
+
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+@Slf4j
 public class AdditiveCipher {
 
-    private Map<String, Integer> mapOfAlphabetToNumber = new HashMap<>();
-    private Map<Integer, String> mapOfNumberToAlphabet = new HashMap<>();
+    private final Map<String, Integer> mapOfAlphabetToNumber = new HashMap<>();
+    private final Map<Integer, String> mapOfNumberToAlphabet = new HashMap<>();
 
     public AdditiveCipher() {
         String alphabets = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -17,14 +24,16 @@ public class AdditiveCipher {
         }
     }
 
-    public String encryptPlainText(String plainText, int key) {
+    public String encryptPlainText(String plainText, int key, boolean debug) {
 
         int[] numbers = new int[plainText.length()];
         int[] cypherTextValues = new int[plainText.length()];
         final StringBuilder cypherTextBuffer = new StringBuilder();
 
-        System.out.println("=================================================");
-        System.out.println("Encryptin cypher Text ===> " + plainText);
+        if (debug) {
+            log.debug("\n\n");
+            log.debug("Encrypting cypher Text ===> {}", plainText);
+        }
 
         for (int i = 0; i < plainText.length(); i++) {
             String plainTextChar = String.valueOf(plainText.charAt(i));
@@ -38,41 +47,45 @@ public class AdditiveCipher {
 
         }
 
-        for (int i = 0; i < plainText.length(); i++) {
-            System.out.print(plainText.charAt(i) + "\t");
+        if (debug) {
+            log.debug(Stream.of(plainText.split(""))
+                    .map (String::new)
+                    .collect(Collectors.joining("\t")));
+
+
+            log.debug(Arrays.stream(numbers)
+                    .mapToObj(number -> number + "")
+                    .collect(Collectors.joining("\t")));
+
+
+            log.debug(Arrays.stream(cypherTextValues)
+                    .mapToObj(number -> number + "")
+                    .collect(Collectors.joining("\t")));
+
+
+
+            log.debug(String.join("\t", cypherTextBuffer.toString().split("")) + "\n");
+
+
+            log.debug("Cypher Text ==> " + cypherTextBuffer);
+
+            log.debug("\n\n");
+
         }
 
-        System.out.println();
-        for (int i = 0; i < plainText.length(); i++) {
-            System.out.print(numbers[i] + "\t");
-        }
-
-        System.out.println();
-        for (int i = 0; i < plainText.length(); i++) {
-            System.out.print(cypherTextValues[i] + "\t");
-        }
-
-        System.out.println();
-
-        for (int i = 0; i < plainText.length(); i++) {
-            System.out.print(cypherTextBuffer.charAt(i) + "\t");
-        }
-        System.out.println();
-        System.out.println("=================================================");
-        System.out.println("\n");
-
-        System.out.println("Cypher Text ==> "+ cypherTextBuffer);
         return cypherTextBuffer.toString();
     }
 
-    public String decryptCypherText(String cypherText, int key) {
+    public String decryptCypherText(String cypherText, int key, boolean debug) {
 
         int[] numbers = new int[cypherText.length()];
         int[] plainTextValues = new int[cypherText.length()];
         final StringBuilder plainTextBuffer = new StringBuilder();
 
-        // System.out.println("=================================================");
-        // System.out.println("Decrypting cypher Text ===> " + cypherText);
+        if (debug) {
+            log.debug("\n\n");
+            log.debug("Decrypting cypher Text ===> " + cypherText);
+        }
 
         for (int i = 0; i < cypherText.length(); i++) {
             String cypherTextChar = String.valueOf(cypherText.charAt(i));
@@ -86,29 +99,26 @@ public class AdditiveCipher {
 
         }
 
-        /*for (int i = 0; i < cypherText.length(); i++) {
-            System.out.print(cypherText.charAt(i) + "\t");
-        }
+       if (debug) {
+           log.debug(Stream.of(cypherText.split(""))
+                   .map (String::new)
+                   .collect(Collectors.joining("\t")));
 
-        System.out.println();
-        for (int i = 0; i < cypherText.length(); i++) {
-            System.out.print(numbers[i] + "\t");
-        }
+           log.debug(Arrays.stream(numbers)
+                   .mapToObj(number -> number + "")
+                   .collect(Collectors.joining("\t")));
 
-        System.out.println();
-        for (int i = 0; i < cypherText.length(); i++) {
-            System.out.print(plainTextValues[i] + "\t");
-        }
+           log.debug(Arrays.stream(plainTextValues)
+                   .mapToObj(number -> number + "")
+                   .collect(Collectors.joining("\t")));
 
-        System.out.println();
+           log.debug(String.join("\t", plainTextBuffer.toString().split("")) + "\n");
+           log.debug("Plain Text ==> "+ plainTextBuffer);
+           log.debug("\n\n");
+           
 
-        for (int i = 0; i < cypherText.length(); i++) {
-            System.out.print(plainTextBuffer.charAt(i) + "\t");
-        }
-        System.out.println();
-        System.out.println("=================================================");
-        System.out.println("\n");
-        System.out.println("Plain Text ==> "+ plainTextBuffer);*/
+       }
+
         return plainTextBuffer.toString();
     }
 
@@ -118,16 +128,12 @@ public class AdditiveCipher {
         int key = -1;
         for (int i = 0; i < 26; i++) {
 
-            String decrypted = decryptCypherText(cypherText, i);
+            String decrypted = decryptCypherText(cypherText, i, false);
 
-            System.out.print("key = " + i + "\t\t");
+            log.debug("key = {} \t--> {}", i, decrypted);
 
-            for (int j = 0; j < decrypted.length(); j++) {
-                System.out.print(decrypted.charAt(j) + "\t");
-            }
-            System.out.println();
             if (decrypted.equals(sensibleText)) {
-                System.out.println("Brute force attack done at key: " + i);
+                log.debug("Brute force attack done at key: " + i);
                 key = i;
                 break;
             }
@@ -140,9 +146,9 @@ public class AdditiveCipher {
 
     public static void main(String[] args) {
         AdditiveCipher additiveCipher = new AdditiveCipher();
-        String cypherText = additiveCipher.encryptPlainText("SHIVAKUMAR", 10);
+        String cypherText = additiveCipher.encryptPlainText("SHIVAKUMAR", 10, true);
 
-        additiveCipher.decryptCypherText("CRSFKUEWKB", 10);
+        additiveCipher.decryptCypherText(cypherText, 10, true);
 
         additiveCipher.bruteForceAttack("CRSFKUEWKB", "SHIVAKUMAR");
 
