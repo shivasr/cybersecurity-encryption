@@ -150,7 +150,7 @@ public class AdditiveCipher {
 
         additiveCipher.decryptCypherText(cypherText, 10, true);
 
-        additiveCipher.bruteForceAttack("CRSFKUEWKB", "SHIVAKUMAR");
-
+       int bruteForce = additiveCipher.bruteForceAttack("CRSFKUEWKB", "SHIVAKUMAR");
+        log.debug(String.valueOf(bruteForce));
     }
 }
