@@ -36,7 +36,14 @@ public class AdditiveCipher {
         }
 
         for (int i = 0; i < plainText.length(); i++) {
+
+            if (plainText.charAt(i) == ' ' || plainText.charAt(i) == '.') {
+                cypherTextBuffer.append(plainText.charAt(i));
+                continue;
+            }
+
             String plainTextChar = String.valueOf(plainText.charAt(i));
+
             numbers[i] = mapOfAlphabetToNumber.get(plainTextChar);
 
             cypherTextValues[i] = Math.floorMod(numbers[i] + key, 26);
@@ -88,6 +95,12 @@ public class AdditiveCipher {
         }
 
         for (int i = 0; i < cypherText.length(); i++) {
+
+            if (cypherText.charAt(i) == ' ' || cypherText.charAt(i) == '.') {
+                plainTextBuffer.append(cypherText.charAt(i));
+                continue;
+            }
+
             String cypherTextChar = String.valueOf(cypherText.charAt(i));
             numbers[i] = mapOfAlphabetToNumber.get(cypherTextChar);
 
@@ -146,11 +159,13 @@ public class AdditiveCipher {
 
     public static void main(String[] args) {
         AdditiveCipher additiveCipher = new AdditiveCipher();
+        log.debug("Q1. Use the additive cipher with key = 15 to encrypt and decrypt the your own name.");
         String cypherText = additiveCipher.encryptPlainText("SHIVAKUMAR", 10, true);
 
         additiveCipher.decryptCypherText(cypherText, 10, true);
 
-       int bruteForce = additiveCipher.bruteForceAttack("CRSFKUEWKB", "SHIVAKUMAR");
+        log.debug("Q2. tBrute the ciphertext obtained in Q1.");
+        int bruteForce = additiveCipher.bruteForceAttack("CRSFKUEWKB", "SHIVAKUMAR");
         log.debug(String.valueOf(bruteForce));
     }
 }
